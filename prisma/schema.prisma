@@ -15,12 +15,12 @@ datasource db {
 }
 
 enum UserRole {
-  Player @map("player")
-  Master @map("master")
-  Admin  @map("admin")
+  player
+  master
+  admin
 }
 
-enum eventStatus {
+enum EventStatus {
   open
   closed
   cancelled
@@ -28,7 +28,7 @@ enum eventStatus {
   @@map("event_status")
 }
 
-enum betOutcome {
+enum BetOutcome {
   win
   loose
   pending
@@ -39,7 +39,8 @@ enum betOutcome {
 model User {
   userId           Int      @id @default(autoincrement()) @map("user_id")
   username         String   @unique
-  userType         UserRole @default(Player) @map("user_type")
+  password         String
+  userType         UserRole @default(player) @map("user_type")
   registrationDate DateTime @default(now()) @map("registration_date")
 
   bets   Bets[]
@@ -51,7 +52,7 @@ model User {
 model Events {
   eventId   Int         @id @default(autoincrement()) @map("event_id")
   sport     String      @map("sport")
-  status    eventStatus @default(closed)
+  status    EventStatus @default(closed)
   eventDate DateTime    @default(now()) @map("event_date")
 
   userId Int    @map("user_id")
@@ -65,7 +66,7 @@ model Bets {
   betId      Int        @id @default(autoincrement()) @map("bet_id")
   betDate    DateTime   @default(now()) @map("bet_date")
   betAmount  Decimal    @map("bet_amount")
-  betOutcome betOutcome @default(pending) @map("bet_outcome")
+  betOutcome BetOutcome @default(pending) @map("bet_outcome")
 
   eventId Int    @map("event_id")
   event   Events @relation(fields: [eventId], references: [eventId])

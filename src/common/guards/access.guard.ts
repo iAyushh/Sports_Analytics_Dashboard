@@ -1,11 +1,13 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "src/auth";
-import { AuthenticatedUser, UserRole } from "../types";
+import { AuthenticatedUser, } from "../types";
 import { PrismaService } from "src/prisma/prisma.service";
+import { UserRole } from "generated/prisma/enums";
+
 
 
 @Injectable()
-export class AuthGuard implements CanActivate{
+export class AccessGuard implements CanActivate{
 
   constructor(private readonly authService: AuthService,
     private readonly prisma: PrismaService,
@@ -18,9 +20,11 @@ export class AuthGuard implements CanActivate{
 
   }
   async validate (user: AuthenticatedUser){
-     if(user.type===UserRole.player){
+     if(user.type===UserRole.admin){
       const userInfo = await this.prisma.user.findUnique({
-        where:{id:user.id},
+        where:{userId: user.id,
+          userType:user.type,
+        },
       })
      }
      return true;

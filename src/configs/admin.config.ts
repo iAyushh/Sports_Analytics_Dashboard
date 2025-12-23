@@ -2,4 +2,6 @@ import { registerAs } from "@nestjs/config";
 
 
 
-export const adminConfigFactory = registerAs
+export const adminConfigFactory = registerAs('admin',()=>({
+    
+}))

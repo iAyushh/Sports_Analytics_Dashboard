@@ -1,10 +1,18 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { EventStatus } from 'generated/prisma/enums';
 
 export class CreateEventDto {
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  evenId: number;
+  sport:string;
 
-  
+  @IsString()
+  @IsNotEmpty()
+  eventDate:string;
+
+  @IsEnum(EventStatus)
+  @IsNotEmpty()
+  status: EventStatus;
+
 
 }

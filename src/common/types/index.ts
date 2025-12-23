@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { UserRole } from 'generated/prisma/enums';
 
 export class EnvironmentVariables {
   @IsInt()
@@ -10,11 +11,6 @@ export class EnvironmentVariables {
 }
 
 
-export enum UserRole {
-  player,
-  master,
-  admin,
-}
 
 export interface JwtPayload {
   readonly sub: number;
