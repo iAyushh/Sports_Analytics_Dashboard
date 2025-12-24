@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { UserRole } from 'generated/prisma/enums';
 
 export class RegisterDto {
@@ -6,11 +6,14 @@ export class RegisterDto {
   @IsString()
   username: string;
 
-  @IsNotEmpty()
+  
   @IsString()
   password: string;
 
-  @IsOptional()
+
   @IsEnum(UserRole)
-  userType?: UserRole;
+  userType: UserRole;
+
+  @IsDate()
+  registrationDate:string;
 }

@@ -3,9 +3,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { ConfigType } from '@nestjs/config';
 import { UtilsService } from 'src/common/providers';
 import { PrismaService } from 'src/prisma';
-import { User, UserRole } from 'generated/prisma/client';
+import { User, UserRole, UserMeta } from 'generated/prisma/client';
 import { ValidatedUser } from 'src/common/types';
-
 
 @Injectable()
 export class UserService {
@@ -25,27 +24,26 @@ export class UserService {
   }
 
   async getByUsername(username: string): Promise<User | null> {
-    return await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         username: username,
       },
+      include: {
+        meta: true,
+      },
     });
+    return user;
   }
 
-  
+  async getMetaById(userId:number):Promise<UserMeta>{
+    return this.prisma.userMeta.findUniqueOrThrow({
+      where:{
+        userId
+      }
+    })
+  }
 
-  // async isUsernameExist(
-  //   usrname:string,
-  //   excludeUserId?:number,
-  // ):Promise<boolean>{
-  //   return await this.prisma.user.count({
-  //     where:{
-
-  //     }
-  //   })
-  // }
-
-  private hashPassword(password: string): { salt: string; hash: string } {
+  private hashPassword(password: string) {
     const salt = this.utilsService.generateSalt(this.config.passwordSaltLength);
     const hash = this.utilsService.hashPassword(
       password,
@@ -62,15 +60,24 @@ export class UserService {
     const user = await this.getByUsername(username);
     if (!user) return null;
 
-    const { hash } = this.hashPassword(password);
-    if (user.password !== hash) {
-      return false;
-    }
+    const userMeta = await this.getMetaById(user.userId);
+    const passwordHash = this.utilsService.hashPassword(
+      password,
+      userMeta.passwordSalt||'',
+      userMeta.passwordHash 
+      ? userMeta.passwordHash.length/2
+      :this.config.passwordHashLength,
+    )
 
-    return {
-      id: user.userId,
-      type: user.userType,
-    };
+    if(userMeta.passwordHash === passwordHash){
+      
+      return {
+        id: user.userId,
+        type: user.userType,
+      };
+    }
+    return false;
+
   }
 
   async create(data: {
@@ -79,21 +86,22 @@ export class UserService {
     userType: UserRole;
     registrationDate: string;
   }): Promise<User> {
-    let passwordSalt: string ;
-    let passwordHash: string ;
+    const { salt, hash } = this.hashPassword(data.password);
 
-    if (data.password) {
-      const { salt, hash } = this.hashPassword(data.password);
-      passwordSalt = salt;
-      passwordHash = hash;
-    }
     return await this.prisma.user.create({
       data: {
         username: data.username,
         userType: data.userType,
-        password:  data.password ,
-        registrationDate:data.registrationDate,
-        
+        registrationDate: data.registrationDate,
+        meta: {
+          create: {
+            passwordHash: hash,
+            passwordSalt: salt,
+          },
+        },
+      },
+      include: {
+        meta: true,
       },
     });
   }

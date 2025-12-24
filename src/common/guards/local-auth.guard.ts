@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import { LOCAL_AUTH } from "src/auth/auth.constants";
+import { LOCAL_AUTH } from "src/auth";
 
 
 @Injectable()

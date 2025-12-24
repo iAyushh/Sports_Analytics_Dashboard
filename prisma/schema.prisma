@@ -39,14 +39,24 @@ enum BetOutcome {
 model User {
   userId           Int      @id @default(autoincrement()) @map("user_id")
   username         String   @unique
-  password         String
   userType         UserRole @default(player) @map("user_type")
   registrationDate DateTime @default(now()) @map("registration_date")
 
   bets   Bets[]
   events Events[]
+  meta   UserMeta?
 
   @@map("user")
+}
+
+model UserMeta {
+  id           Int     @id @default(autoincrement())
+  userId       Int     @unique @map("user_id")
+  user         User    @relation(fields: [userId], references: [userId])
+  passwordSalt String? @map("password_salt")
+  passwordHash String? @map("password_hash")
+
+  @@map("user_meta")
 }
 
 model Events {
