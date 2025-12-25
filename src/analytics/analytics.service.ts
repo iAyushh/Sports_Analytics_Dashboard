@@ -6,7 +6,7 @@ export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async closedEventBets() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT 
       u.username,
       e.sport,
@@ -16,11 +16,11 @@ export class AnalyticsService {
     JOIN "user" u ON u.user_id = b.user_id
     JOIN events e ON e.event_id = b.event_id
     WHERE e.status = 'closed'
-  `);
+  `;
 }
 
 async aggPerUser() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       u.username,
       u.user_type,
@@ -29,11 +29,11 @@ async aggPerUser() {
     FROM bets b
     JOIN "user" u ON u.user_id = b.user_id
     GROUP BY u.username, u.user_type
-  `);
+  `;
 }
 
 async sportAnalytics() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       e.sport,
       COUNT(*) AS total_bets,
@@ -45,11 +45,11 @@ async sportAnalytics() {
     FROM bets b
     JOIN events e ON e.event_id = b.event_id
     GROUP BY e.sport
-  `);
+  `;
 }
 
 async dailyAnalytics() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       DATE(b.bet_date) AS day,
       COUNT(*) AS total_bets,
@@ -60,11 +60,11 @@ async dailyAnalytics() {
     WHERE b.bet_date >= NOW() - INTERVAL '30 days'
     GROUP BY day
     ORDER BY day
-  `);
+  `;
 }
 
 async cricketBetters() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       u.username,
       SUM(b.bet_amount) AS total_cricket_bet,
@@ -75,11 +75,11 @@ async cricketBetters() {
     WHERE e.sport = 'cricket'
     GROUP BY u.username
     HAVING COUNT(DISTINCT e.sport) = 1
-  `);
+  `;
 }
 
 async topBetters() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       RANK() OVER (ORDER BY SUM(b.bet_amount) DESC) AS rank,
       u.username,
@@ -90,11 +90,11 @@ async topBetters() {
     GROUP BY u.username, u.user_type
     ORDER BY total_bet_amount DESC
     LIMIT 10
-  `);
+  `;
 }
 
 async eventProfitLoss() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       e.event_id,
       e.sport,
@@ -107,11 +107,11 @@ async eventProfitLoss() {
     FROM bets b
     JOIN events e ON e.event_id = b.event_id
     GROUP BY e.event_id, e.sport
-  `);
+  `;
 }
 
 async runningTotals() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       u.username,
       b.bet_date,
@@ -127,11 +127,11 @@ async runningTotals() {
       GROUP BY user_id
       HAVING COUNT(*) >= 5
     )
-  `);
+  `;
 }
 
 async highRiskUsers() {
-  return this.prisma.$queryRawUnsafe(`
+  return this.prisma.$queryRaw`
     SELECT
       u.username,
       COUNT(*) AS total_bets,
@@ -150,7 +150,7 @@ async highRiskUsers() {
       COUNT(CASE WHEN b.bet_outcome = 'win' THEN 1 END)::decimal / COUNT(*) < 0.2 AND
       SUM(b.bet_amount) > 10000 AND
       COUNT(DISTINCT e.sport) >= 3
-  `);
+  `;
 }
 
 

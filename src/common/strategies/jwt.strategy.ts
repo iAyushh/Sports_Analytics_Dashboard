@@ -6,7 +6,7 @@ import { AuthenticatedUser, JwtPayload } from '../types';
 import { JWT_AUTH } from '../common.constants';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy,JWT_AUTH) {
+export class JwtStrategy extends PassportStrategy(Strategy, JWT_AUTH) {
   constructor(private readonly configService: ConfigService) {
     const secret = configService.get<string>('jwt.secret');
 
@@ -14,12 +14,10 @@ export class JwtStrategy extends PassportStrategy(Strategy,JWT_AUTH) {
       throw new Error('JWT secret is not defined');
     }
 
-    console.log('JWT STRATEGY SECRET:', secret);
-
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: secret, 
+      secretOrKey: secret,
     });
   }
 

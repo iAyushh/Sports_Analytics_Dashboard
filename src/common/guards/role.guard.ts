@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
     if(!user){
       throw new UnauthorizedException("User not authenticated.")
     }
-    console.log('USER IN GUARD:', request.user);
+    
 
     if (!user.type) {
       throw new ForbiddenException();
