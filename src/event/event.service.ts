@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma';
 import { UserService } from 'src/user';
 import { CreateEventDto, UpdateEventDto } from './dto';
@@ -10,7 +10,7 @@ export class EventService {
     private readonly userService: UserService,
   ) {}
 
-  async getAllEvents(){
+  async getAllEvents() {
     return await this.prisma.events.findMany();
   }
   async findById(eventId: number) {
@@ -22,8 +22,6 @@ export class EventService {
   }
 
   async addEvent(userId: number, data: CreateEventDto) {
-    const user = await this.userService.getById(userId);
-
     const newEvent = await this.prisma.events.create({
       data: {
         userId,
@@ -36,7 +34,6 @@ export class EventService {
   }
 
   async updateEvent(userId: number, eventId: number, data: UpdateEventDto) {
-    const user = await this.userService.getById(userId);
     const event = await this.findById(eventId);
 
     if (userId !== event.userId) {
@@ -49,17 +46,17 @@ export class EventService {
       data: {
         sport: data.sport,
         eventDate: data.eventDate,
+        status:data.status,
       },
     });
     return updatedEvent;
   }
 
   async deleteEvent(userId: number, eventId: number) {
-    const user = await this.userService.getById(userId);
     const event = await this.findById(eventId);
 
-    if (userId !== event.userId) {
-      throw new ForbiddenException('Not Allowed!');
+    if(!event){
+      throw new NotFoundException('Event not found.')
     }
     const deletedEvent = await this.prisma.events.delete({
       where: {

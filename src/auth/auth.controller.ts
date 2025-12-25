@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthService, ValidAuthResponse } from './auth.service';
-import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
+import { LocalAuthGuard } from 'src/common/guards';
 import { ValidatedUser } from 'src/common/types';
 import { RegisterDto } from './dto';
 
@@ -8,8 +8,8 @@ import { RegisterDto } from './dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('login')
   @UseGuards(LocalAuthGuard)
+  @Post('login')
   async login(@Req() req: Request & { user: ValidatedUser }) {
     const { accessToken, type } = await this.authService.login(
       req.user.id,
