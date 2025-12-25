@@ -10,6 +10,7 @@ import { AuthModule } from 'src/auth';
   imports:[PrismaModule,UserModule,AuthModule],
   providers: [EventService,],
   controllers: [EventController],
+  exports:[EventService]
   
 })
 export class EventModule {}

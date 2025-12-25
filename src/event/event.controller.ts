@@ -16,8 +16,8 @@ import { Roles } from 'src/common/decorators';
 import { UserRole } from 'generated/prisma/enums';
 import type { AuthenticatedRequest } from 'src/common/types';
 
+@UseGuards(JwtAuthGuard, AccessGuard,  RolesGuard)
 @Roles(UserRole.admin, UserRole.master)
-@UseGuards(AccessGuard, JwtAuthGuard, RolesGuard)
 @Controller('event')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
@@ -26,7 +26,7 @@ export class EventController {
     return this.eventService.getAllEvents();
   }
   @Get(':id')
-  getEventById(eventId: number) {
+  getEventById(@Param('id') eventId: number) {
     return this.eventService.findById(eventId);
   }
 
@@ -37,7 +37,7 @@ export class EventController {
 
   @Patch(':id')
   updateEvent(
-    @Param('eventId') eventId: number,
+    @Param('id') eventId: number,
     @Body() dto: UpdateEventDto,
     @Req() req: AuthenticatedRequest,
   ) {
