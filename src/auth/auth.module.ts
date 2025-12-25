@@ -6,13 +6,24 @@ import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import {  LocalStrategy } from 'src/strategies/local.strategy';
 import { PassportModule } from '@nestjs/passport';
-import { LOCAL_AUTH } from './auth.constants';
+import { LOCAL_AUTH } from './auth.constants';;
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { forwardRef } from '@nestjs/common';
 
 @Module({
-  imports:[UserModule, JwtModule.register({
-    secret:process.env.JWT_SECRET,
-    signOptions:{expiresIn:'1d'}
-  }), PassportModule.register({defaultStrategy:LOCAL_AUTH})],
+  imports:[ 
+    ConfigModule,
+    forwardRef(() => UserModule)
+, JwtModule.registerAsync({
+  imports:[ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('jwt.secret'),
+        signOptions: {
+          expiresIn: 60 * 60 * 24,
+        },
+      }),
+    }), PassportModule.register({defaultStrategy:LOCAL_AUTH})],
   providers: [AuthService,PrismaService,LocalStrategy],
   controllers: [AuthController],
   exports:[AuthService, PassportModule]

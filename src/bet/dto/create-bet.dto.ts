@@ -1,5 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/index-browser";
-import { IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsDecimal, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsPositive } from "class-validator";
 import { BetOutcome } from "generated/prisma/enums";
 
 
@@ -8,9 +8,9 @@ export class CreateBetDto{
     @IsNotEmpty()
     eventId: number;
 
-    @IsDecimal()
-    @IsNotEmpty()
-    betAmount:Decimal;
+    @IsNumber()
+    @IsPositive()
+    betAmount:number;
 
     @IsEnum(BetOutcome)
     @IsOptional()

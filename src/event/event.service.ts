@@ -26,7 +26,7 @@ export class EventService {
       data: {
         userId,
         sport: data.sport,
-        eventDate: data.eventDate,
+        eventDate: new Date(data.eventDate),
         status: data.status,
       },
     });

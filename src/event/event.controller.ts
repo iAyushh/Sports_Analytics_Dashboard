@@ -26,8 +26,8 @@ export class EventController {
     return this.eventService.getAllEvents();
   }
   @Get(':id')
-  getEventById(@Param('id') eventId: number) {
-    return this.eventService.findById(eventId);
+  getEventById(@Param('id') eventId: string) {
+    return this.eventService.findById(Number(eventId));
   }
 
   @Post()
@@ -37,20 +37,20 @@ export class EventController {
 
   @Patch(':id')
   updateEvent(
-    @Param('id') eventId: number,
+    @Param('id') eventId: string,
     @Body() dto: UpdateEventDto,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.id;
-    return this.eventService.updateEvent(userId, eventId, dto);
+    return this.eventService.updateEvent(userId, Number(eventId), dto);
   }
 
   @Delete(':eventId')
   deleteEvent(
-    @Param('eventId') eventId: number,
+    @Param('eventId') eventId: string,
     @Req() req: AuthenticatedRequest,
   ) {
     const userId = req.user.id;
-    return this.eventService.deleteEvent(userId, eventId);
+    return this.eventService.deleteEvent(userId, Number(eventId));
   }
 }
