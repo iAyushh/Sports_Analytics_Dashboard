@@ -46,6 +46,7 @@ model User {
   events Events[]
   meta   UserMeta?
 
+  @@index([userType])
   @@map("user")
 }
 
@@ -69,6 +70,9 @@ model Events {
   user   User   @relation(fields: [userId], references: [userId])
   bets   Bets[]
 
+  @@index([status])
+  @@index([sport])
+  @@index([eventDate])
   @@map("events")
 }
 
@@ -84,5 +88,9 @@ model Bets {
   userId Int  @map("user_id")
   user   User @relation(fields: [userId], references: [userId])
 
+  @@index([userId])
+  @@index([eventId])
+  @@index([betDate])
+  @@index([userId, betDate])
   @@map("bets")
 }

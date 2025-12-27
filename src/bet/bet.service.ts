@@ -3,7 +3,6 @@ import { EventService } from 'src/event/';
 import { PrismaService } from 'src/prisma';
 import { UserService } from 'src/user/';
 import { CreateBetDto } from './dto/create-bet.dto';
-import { NotFoundError } from 'rxjs';
 import { BetOutcome } from 'generated/prisma/enums';
 
 
